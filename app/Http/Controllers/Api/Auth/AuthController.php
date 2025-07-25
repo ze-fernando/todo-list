@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -18,7 +18,10 @@ class AuthController extends Controller
 
     private function deleteToken(User $user): void
     {
-        $user->currentAccessToken()->delete();
+        $hasToken = $user->currentAccessToken();
+        if ($hasToken) {
+            $hasToken->delete();
+        }
     }
 
     public function login(Request $request): JsonResponse
@@ -42,7 +45,7 @@ class AuthController extends Controller
             return response()->json(['user' => $user, 'access_token' => $token, 'token_type' => 'Bearer']);
         } catch (\Throwable $th) {
             Log::error($th);
-            return response()->json(['message' => 'Ocorreu um erro ao tentar fazer login']);
+            return response()->json(['erro' => $th->getMessage()]);
         }
     }
 
@@ -51,13 +54,11 @@ class AuthController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'required',
-                'age' => 'required|numeric',
                 'email' => 'required|email|unique:users,email',
-                'password' => 'required|confirmed|min:8',
+                'password' => 'required|min:8',
             ]);
 
             $user = User::create($data);
-            $user->setFreePlan();
 
             if ($user) {
                 $token = $this->generateToken($user);
@@ -66,7 +67,7 @@ class AuthController extends Controller
             return response()->json(['user' => $user, 'access_token' => $token, 'token_type' => 'Bearer']);
         } catch (\Throwable $th) {
             Log::error($th);
-            return response()->json(['message' => 'Ocorreu um erro ao tentar criar sua conta']);
+            return response()->json(['error' => $th->getMessage()]);
         }
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Todo;
 
 use App\Http\Controllers\Controller;
 use App\Models\Todo;
@@ -47,9 +47,10 @@ class TodoController extends Controller
     {
         try {
             $data = $request->validate([
-                'title' => 'required|string|unique|todos,title',
+                'title' => 'required|string|unique:todos,title',
+                'description' => 'sometimes|string',
                 'expire' => 'required|date',
-                'done' => 'required|boolean',
+                'done' => 'sometimes|boolean',
                 'priority' => Rule::in('low', 'medium', 'high')
             ]);
 
@@ -72,7 +73,8 @@ class TodoController extends Controller
                 return response()->json(['Erro' => 'Todo não encontrada'], 404);
             }
 
-            $todo->makeDone();
+            $todo->setDone();
+            $todo->save();
 
             return response()->json($todo, 200);
         } catch (\Throwable $th) {

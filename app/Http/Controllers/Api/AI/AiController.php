@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\AI;
 
 use App\Http\Controllers\Controller;
 use App\Models\Todo;
-use Illuminate\Http\Request;
+use App\Services\AiService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use AiService;
 
 class AiController extends Controller
 {
-    public function index(Request $request)
+    public function getResume()
     {
         try {
             $userId = Auth::id();
