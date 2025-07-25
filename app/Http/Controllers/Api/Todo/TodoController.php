@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Todo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use PhpParser\Node\Stmt\TryCatch;
+use Illuminate\Validation\Rule;
 
 class TodoController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         try {
             $id = Auth::id();
 
@@ -24,19 +26,25 @@ class TodoController extends Controller
         }
     }
 
-    public function show(int $id){
+    public function show(int $id)
+    {
         try {
             $todo = Todo::find($id);
 
+            if (!$todo) {
+                return response()->json(['Erro ao buscar todos ' => 'Todo não encotrada'], 404);
+            }
+
             return response()->json($todo, 200);
         } catch (\Throwable $th) {
-            Log::info('Erro ao listar todos ' . $th->getMessage());
+            Log::info('Erro ao buscar todo ' . $th->getMessage());
 
-            return response()->json(['Erro ao listar todos ' => $th->getMessage()], 500);
+            return response()->json(['Erro ao buscar todo ' => $th->getMessage()], 500);
         }
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         try {
             $data = $request->validate([
                 'title' => 'required|string|unique|todos,title',
@@ -48,7 +56,6 @@ class TodoController extends Controller
             $todo = Todo::create($data);
 
             return response()->json($todo, 201);
-
         } catch (\Throwable $th) {
             Log::info('Erro ao criar todo ' . $th->getMessage());
 
@@ -56,13 +63,13 @@ class TodoController extends Controller
         }
     }
 
-
-    public function update(int $id){
+    public function update(int $id)
+    {
         try {
             $todo = Todo::find($id);
 
-            if(!$todo){
-                return response()->json(['Erro' => 'Todo não encontrada'],404);
+            if (!$todo) {
+                return response()->json(['Erro' => 'Todo não encontrada'], 404);
             }
 
             $todo->makeDone();
@@ -72,15 +79,16 @@ class TodoController extends Controller
             Log::info('Erro ao atualizar todo ' . $th->getMessage());
 
             return response()->json(['Erro ao atualizar todo ' => $th->getMessage()], 500);
-        } 
+        }
     }
 
-    public function destroy(int $id){
+    public function destroy(int $id)
+    {
         try {
             $todo = Todo::find($id);
 
-            if(!$todo){
-                return response()->json(['Erro' => 'Todo não encontrada'],404);
+            if (!$todo) {
+                return response()->json(['Erro' => 'Todo não encontrada'], 404);
             }
 
             $todo->delete();
@@ -90,6 +98,6 @@ class TodoController extends Controller
             Log::info('Erro ao atualizar todo ' . $th->getMessage());
 
             return response()->json(['Erro ao atualizar todo ' => $th->getMessage()], 500);
-        } 
+        }
     }
 }
