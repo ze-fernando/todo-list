@@ -16,5 +16,6 @@ Route::middleware(['auth:sanctum'])->prefix('/todo')->group(function () {
         Route::get('/{id}', 'show');
         Route::post('/', 'store');
         Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
     });
 });
