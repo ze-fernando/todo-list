@@ -9,11 +9,11 @@ class AiService
 {
     private static $client;
 
-    public function init()
+    public static function init()
     {
         if (!self::$client) {
             $apiKey = getenv('GEMINI_KEY');
-            $client = Gemini::client($apiKey);
+            self::$client = Gemini::client($apiKey);
         }
     }
 
