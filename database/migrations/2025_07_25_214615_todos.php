@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->timestamp('expire');
             $table->boolean('done')->default(false);
             $table->enum('priority', ['low', 'medium', 'high'])->default('low');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

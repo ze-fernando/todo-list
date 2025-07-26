@@ -54,6 +54,8 @@ class TodoController extends Controller
                 'priority' => Rule::in('low', 'medium', 'high')
             ]);
 
+            $data['user_id'] = Auth::id();
+
             $todo = Todo::create($data);
 
             return response()->json($todo, 201);
@@ -95,7 +97,7 @@ class TodoController extends Controller
 
             $todo->delete();
 
-            return response()->json();
+            return response()->json([]);
         } catch (\Throwable $th) {
             Log::info('Erro ao atualizar todo ' . $th->getMessage());
 

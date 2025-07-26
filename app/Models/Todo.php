@@ -14,7 +14,8 @@ class Todo extends Model
         'description',
         'expire',
         'done',
-        'priority'
+        'priority',
+        'user_id'
     ];
 
     protected $casts = [
