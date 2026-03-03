@@ -9,6 +9,7 @@ from rest_framework.status import (
 )
 from rest_framework.views import APIView
 
+from users.models import User
 from users.serializers import LoginSerializer, RegisterSerializer
 
 
@@ -38,13 +39,15 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            return Response({"message": "Hello, World!"})
-        return Response(serializer.errors, status=400)
+            username = serializer.validated_data.get("username")  # type: ignore
+            password = serializer.validated_data.get("password")  # type: ignore
+            email = serializer.validated_data.get("email")  # type: ignore
 
+            user = User.objects.create_user(
+                username=username, password=password, email=email
+            )
+            token, _ = Token.objects.get_or_create(user=user)  # type: ignore
 
-class LogoutView(APIView):
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            return Response({"message": "Hello, World!"})
-        return Response(serializer.errors, status=400)
+            return Response({"token": token.key}, status=HTTP_200_OK)
+
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
