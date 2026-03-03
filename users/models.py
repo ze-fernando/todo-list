@@ -1,10 +1,11 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from task.models import Task
 
 
-class User(models.Model):
-    username = models.CharField(max_length=150)
+class User(AbstractUser):
+    username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
 
